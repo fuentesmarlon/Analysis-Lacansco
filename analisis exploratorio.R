@@ -142,3 +142,61 @@ qqline(clean_historia$Margen, col = 3)
 summary(clean_historia$Ratio)
 qqnorm(clean_historia$Ratio ,main = "Ratio", col = 2)
 qqline(clean_historia$Ratio, col = 3)
+#diagrama de caja y bigotes
+z <- UnidadesPorSector[,4]
+boxplot(z)
+boxplot(z, horizontal = TRUE, ylim = c(0, 11))
+boxplot(z, horizontal = TRUE, ylim = c(0, 50))
+boxplot(z, horizontal = TRUE, ylim = c(0, 100))
+z <- UnidadesPorSector[,5]
+boxplot(z, horizontal = TRUE, ylim = c(0, 100))
+boxplot(z, horizontal = TRUE, ylim = c(0, 500))
+boxplot(z)
+boxplot(z, horizontal = TRUE, ylim = c(-10, 10000))
+z <- UnidadesPorSector[,6]
+boxplot(z, horizontal = TRUE, ylim = c(-10, 10000))
+UnidadesPorSector <- read_excel("UnidadesPorSectorNew.xlsx", sheet = 1)
+boxplot(z, horizontal = TRUE, ylim = c(-10, 10000))
+View(UnidadesPorSector)
+z <- UnidadesPorSector[,7]
+boxplot(z, horizontal = TRUE, ylim = c(-10, 10000))
+z <- UnidadesPorSector[,8]
+boxplot(z, horizontal = TRUE, ylim = c(-10, 10000))
+z <- UnidadesPorSector[,9]
+boxplot(z, horizontal = TRUE, ylim = c(-10, 8000))
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,10]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,11]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,12]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,13]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,14]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,15]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,16]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,17]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,18]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,19]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,19]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,20]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,21]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,22]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,22]
+z <- UnidadesPorSector[,23]
+boxplot(z, horizontal = TRUE, ylim = c(0, 8000))
+z <- UnidadesPorSector[,24]
+boxplot(z, horizontal = TRUE, ylim = c(0, 1000))
+z <- UnidadesPorSector[,25]
+boxplot(z, horizontal = TRUE, ylim = c(0, 1000))
