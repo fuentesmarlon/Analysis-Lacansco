@@ -200,3 +200,36 @@ z <- UnidadesPorSector[,24]
 boxplot(z, horizontal = TRUE, ylim = c(0, 1000))
 z <- UnidadesPorSector[,25]
 boxplot(z, horizontal = TRUE, ylim = c(0, 1000))
+ z <- Paginacion20152019[,3]
+View(Paginacion20152019)
+boxplot(z, horizontal = TRUE, ylim = c(0, 1000))
+z <- Paginacion20152019[,0]
+boxplot(z, horizontal = TRUE, ylim = c(0, 1000))
+z <- Paginacion20152019[,1]
+z <- Paginacion20152019[,6]
+boxplot(z, horizontal = TRUE, ylim = c(0, 1000))
+boxplot(z, horizontal = TRUE, ylim = c(0, 300))
+z <- Paginacion20152019[,8]
+z <- Paginacion20152019[,9]
+z <- Paginacion20152019[,10]
+boxplot(z, horizontal = TRUE, ylim = c(0, 4000))
+z <- Paginacion20152019[,11]
+boxplot(z, horizontal = TRUE, ylim = c(0, 4000))
+z <- Paginacion20152019[,12]
+boxplot(z, horizontal = TRUE, ylim = c(0, 100000))
+z <- Paginacion20152019[,14]
+boxplot(z, horizontal = TRUE, ylim = c(0, 100000))
+z <- Paginacion20152019[,15]
+boxplot(z, horizontal = TRUE, ylim = c(0, 100000))
+boxplot(z, horizontal = TRUE, ylim = c(0, 5000))
+boxplot(z, horizontal = TRUE, ylim = c(0, 500))
+boxplot(z, horizontal = TRUE, ylim = c(0, 100))
+boxplot(z, horizontal = TRUE, ylim = c(0, 50))
+boxplot(z, horizontal = TRUE, ylim = c(0, 20))
+boxplot(z, horizontal = TRUE, ylim = c(0, 20))
+z <- Paginacion20152019[,16]
+boxplot(z, horizontal = TRUE, ylim = c(0, 20))
+boxplot(z, horizontal = TRUE, ylim = c(0, 10))
+boxplot(z, horizontal = TRUE, ylim = c(0, 1))
+z <- Paginacion20152019[,17]
+boxplot(z, horizontal = TRUE, ylim = c(0, 1))
