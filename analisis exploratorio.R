@@ -20,6 +20,30 @@ clean_historia <- data.frame(lapply(clean_historia, function(v) {
   else return(v)
 }))
 
+#Limpieza de paginacion20152019 hoja 1
+# quitar tildes y comas
+Paginacion20152019$Descripcion <- chartr('áéíóúñÑ','aeiounN', Paginacion20152019$Descripcion)
+Paginacion20152019$Descripcion = gsub("[[:punct:]]", "", Paginacion20152019$Descripcion)
+pagina_sin_na <- Paginacion20152019[complete.cases(Paginacion20152019$Pagina),]
+
+#Qitar espacios al inicio y fin
+Paginacion20152019$Pagina = gsub("^ ", "", Paginacion20152019$Pagina)
+Paginacion20152019$Pagina = gsub(" $", "", Paginacion20152019$Pagina)
+
+#Quitar nulls de precios
+Paginacion20152019$`Precio Catalogo` <- sub("NULL", NA, Paginacion20152019$`Precio Catalogo`)
+precio_catalogo_sin_na <- Paginacion20152019[complete.cases(Paginacion20152019$`Precio Catalogo`),]
+
+Paginacion20152019$`Precio Vta s/iva` <- sub("NULL", NA, Paginacion20152019$`Precio Vta s/iva`)
+precio_vta_sin_na <- Paginacion20152019[complete.cases(Paginacion20152019$`Precio Vta s/iva`),]
+
+Paginacion20152019$Costo <- sub("NULL", NA, Paginacion20152019$Costo)
+costo_sin_na <- Paginacion20152019[complete.cases(Paginacion20152019$Costo),]
+
+observaciones_sin_na <- Paginacion20152019[complete.cases(Paginacion20152019$Observaciones),]
+
+
+
 ##barplots unidades por sector
 
 
