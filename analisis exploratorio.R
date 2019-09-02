@@ -1,4 +1,4 @@
-#setwd("C:/Users/Cristian/Documents/uvg2019 2do semestre/data science/proyectos/proyecto2/data/Guatemala")
+setwd("C:/Users/Cristian/Documents/uvg2019 2do semestre/data science/proyectos/proyecto2/data/Guatemala")
 library("readxl")
 
 historia <- read_excel("Catalogo Guatemala 2018-2019.xlsx", sheet = 1)
@@ -428,3 +428,32 @@ hc.cut<-hcut(Paginacion20152019[,1:17], k=3, hc_method = "complete")
 fviz_dend(hc.cut, show_labels = FALSE, rect = TRUE)
 fviz_cluster(hc.cut, ellipse.type = "convex")
 
+#PCA
+historia_centrada <- clean_historia[,c(9,10,11,12,13,15,17)]
+historia_centrada$`Precio Catalogo`<- historia_centrada$`Precio Catalogo` - mean(historia_centrada$`Precio Catalogo`)
+historia_centrada$`Precio Vta s/iva` <- historia_centrada$`Precio Vta s/iva` - mean(historia_centrada$`Precio Vta s/iva`)
+historia_centrada$Pronostico <- historia_centrada$Pronostico - mean(historia_centrada$Pronostico)
+historia_centrada$`Unidades Vendidas` <- historia_centrada$`Unidades Vendidas` - mean(historia_centrada$`Unidades Vendidas`)
+historia_centrada$`Venta Neta s/iva`<- historia_centrada$`Venta Neta s/iva` - mean(historia_centrada$`Venta Neta s/iva`)
+#limpieza costo
+historia_centrada$Costo <- historia_centrada$Costo %>% replace(.=="NULL", NA)
+historia_centrada$Costo[is.na(historia_centrada$Costo)] <- 0
+
+#historia_centrada$Costo <- historia_centrada$Costo - mean(historia_centrada$Costo)
+historia_centrada$Utilidad <- historia_centrada$Utilidad - mean(historia_centrada$Utilidad)
+historia_centrada$`Pedido Real` <- historia_centrada$`Pedido Real` - mean(historia_centrada$`Pedido Real`)
+matriz_cov <- cov(historia_centrada)
+matriz_cov
+
+eigenvalores <- eigen(matriz_cov)
+eigenvalores$values
+eigenvalores$vectors
+
+t_eigenvectores <- t(eigenvalores)
+t_eigenvectores
+
+t_datos_centrados <- t(historia_centrada)
+t_datos_centrados
+pc_scores <- t_eigenvectores %*% t_datos_centrados
+rownames(pc_scores) <- c("PC1", "PC2")
+t(pc_scores)
