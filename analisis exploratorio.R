@@ -20,6 +20,12 @@ clean_historia <- data.frame(lapply(clean_historia, function(v) {
   else return(v)
 }))
 
+Paginacion20152019 = separate(data =  Paginacion20152019, 
+                              col  =  `A�o Mes`,  
+                              into =  c("A�o", "Mes"), 
+                              sep  =  4, remove = TRUE,
+                              convert = TRUE )
+
 #Limpieza de paginacion20152019 hoja 1
 # quitar tildes y comas
 Paginacion20152019$Descripcion <- chartr('áéíóúñÑ','aeiounN', Paginacion20152019$Descripcion)
