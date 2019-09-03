@@ -1,6 +1,16 @@
 setwd("C:/Users/Cristian/Documents/uvg2019 2do semestre/data science/proyectos/proyecto2/data/Guatemala")
 library("readxl")
-
+library("readxl")
+library("dplyr")
+library(dplyr)
+library(tidyr)
+library(cluster) #Para calcular la silueta
+library(e1071)#para cmeans
+library(mclust) #mixtures of gaussians
+library(fpc) #para hacer el plotcluster
+library(NbClust) #Para determinar el nï¿½mero de clusters ï¿½ptimo
+library(factoextra) #Para hacer grï¿½ficos bonitos de clustering
+library(ggplot2)
 historia <- read_excel("Catalogo Guatemala 2018-2019.xlsx", sheet = 1)
 
 UnidadesPorSector <- read_excel("UnidadesPorSectorNew.xlsx", sheet = 1)
@@ -19,6 +29,7 @@ clean_historia <- data.frame(lapply(clean_historia, function(v) {
   if (is.character(v)) return(toupper(v))
   else return(v)
 }))
+
 
 Paginacion20152019 = separate(data =  Paginacion20152019, 
                               col  =  `Año Mes`,  
@@ -119,8 +130,7 @@ ggplot(data = UnidadesPorSector)+
  
     
 #setwd("C:/Users/Cristian/Documents/uvg2019 2do semestre/data science/proyectos/proyecto2/data/Guatemala")
-library("readxl")
-library("dplyr")
+
 
 
 clean_historia[is.na(clean_historia$`Precio Catalogo`),] <- 0
@@ -263,12 +273,6 @@ boxplot(z, horizontal = TRUE, ylim = c(0, 10))
 boxplot(z, horizontal = TRUE, ylim = c(0, 1))
 z <- Paginacion20152019[,17]
 boxplot(z, horizontal = TRUE, ylim = c(0, 1))
-library(cluster) #Para calcular la silueta
-library(e1071)#para cmeans
-library(mclust) #mixtures of gaussians
-library(fpc) #para hacer el plotcluster
-library(NbClust) #Para determinar el nï¿½mero de clusters ï¿½ptimo
-library(factoextra) #Para hacer grï¿½ficos bonitos de clustering
 
 #k-medias
 datos<-historia
@@ -463,3 +467,153 @@ t_datos_centrados
 pc_scores <- t_eigenvectores %*% t_datos_centrados
 rownames(pc_scores) <- c("PC1", "PC2")
 t(pc_scores)
+
+
+
+
+##PRUEBAS PCA
+library(tidyverse)
+
+historia_centrada<-historia_centrada %>% 
+  rename(
+    Precio_Catalogo = ...9,
+    Precio_Venta_sin_iva = ...10,
+    Pronostico = ...11,
+    Unidades_Vendidas = ...12,
+    Venta_neta_sin_iva = ...13,
+    Utilidad = ...15,
+    PrecioReal = ...17
+  )
+
+historia_centrada <-historia_centrada[-1,]
+indx <- sapply(historia_centrada, is.factor)
+historia_centrada[indx] <- lapply(historia_centrada[indx], function(x) as.numeric(as.character(x)))
+
+View(historia_centrada)
+class(historia_centrada$Precio_Catalogo)
+complete.cases(historia_centrada)
+historia_centrada<-historia_centrada[complete.cases(historia_centrada), ]
+historia_centrada$Precio_Catalogo <- historia_centrada$Precio_Catalogo - mean(historia_centrada$Precio_Catalogo )
+historia_centrada$Precio_Venta_sin_iva <- historia_centrada$Precio_Venta_sin_iva- mean(historia_centrada$Precio_Venta_sin_iva)
+historia_centrada$Pronostico <- historia_centrada$Pronostico- mean(historia_centrada$Pronostico)
+historia_centrada$Unidades_Vendidas<- historia_centrada$Unidades_Vendidas - mean(historia_centrada$Unidades_Vendidas)
+historia_centrada$Venta_neta_sin_iva<-historia_centrada$Venta_neta_sin_iva  - mean(historia_centrada$Venta_neta_sin_iva)
+historia_centrada$Utilidad<-  historia_centrada$Utilidad- mean(historia_centrada$Utilidad)
+historia_centrada$PrecioReal<- historia_centrada$PrecioReal- mean(historia_centrada$PrecioReal)
+matriz_cov <- cov(historia_centrada)
+matriz_cov
+eigen <- eigen(matriz_cov)
+eigen$values
+eigen$vectors
+t_eigenvectors <- t(eigen$vectors)
+t_eigenvectors
+t_historia_centrada <- t(historia_centrada)
+t_historia_centrada
+# Producto matricial
+pc_scores <- t_eigenvectors %*% t_historia_centrada
+rownames(pc_scores) <- c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7")
+
+# Se vuelve a transponer para que los datos estén en modo tabla
+t(pc_scores)
+
+datos_recuperados <- t(eigen$vectors %*% pc_scores)
+datos_recuperados[, 1] <- datos_recuperados[, 1] + mean(historia_centrada$Precio_Catalogo)
+datos_recuperados[, 2] <- datos_recuperados[, 2] + mean(historia_centrada$Precio_Venta_sin_iva)
+datos_recuperados[, 3] <- datos_recuperados[, 3] + mean(historia_centrada$Pronostico)
+datos_recuperados[, 4] <- datos_recuperados[, 4] + mean(historia_centrada$Unidades_Vendidas)
+datos_recuperados[, 5] <- datos_recuperados[, 5] + mean(historia_centrada$Venta_neta_sin_iva)
+datos_recuperados[, 6] <- datos_recuperados[, 6] + mean(historia_centrada$Utilidad)
+datos_recuperados[, 7] <- datos_recuperados[, 7] + mean(historia_centrada$PrecioReal)
+datos_recuperados
+
+
+datos_recuperados
+historia_centrada
+
+
+##mas 
+apply(X = historia_centrada, MARGIN = 2, FUN = mean)
+apply(X = historia_centrada, MARGIN = 2, FUN = var)
+##generando pca
+pca <- prcomp(historia_centrada, scale = TRUE)
+
+names(pca)
+pca$center
+pca$scale
+pca$rotation
+head(pca$x)
+dim(pca$x)
+##graficando pca 
+biplot(x = pca, scale = 0, cex = 0.6, col = c("blue4", "brown3"))
+pca$rotation <- -pca$rotation
+pca$x        <- -pca$x
+biplot(x = pca, scale = 0, cex = 0.6, col = c("blue4", "brown3"))
+
+##calculando y graficando propagacion de varianza
+library(ggplot2)
+pca$sdev^2
+prop_varianza <- pca$sdev^2 / sum(pca$sdev^2)
+prop_varianza
+
+##graficando varianza que explica cada componente
+ggplot(data = data.frame(prop_varianza, pc = 1:7),
+       aes(x = pc, y = prop_varianza)) +
+  geom_col(width = 0.3) +
+  scale_y_continuous(limits = c(0,1)) +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. de varianza explicada")
+
+##Calculando propagacion de varianza acumulada
+prop_varianza_acum <- cumsum(prop_varianza)
+prop_varianza_acum
+
+##Grafica de propagacion de varianza acumulada
+ggplot(data = data.frame(prop_varianza_acum, pc = 1:7),
+       aes(x = pc, y = prop_varianza_acum, group = 1)) +
+  geom_point() +
+  geom_line() +  geom_label(aes(label = round(prop_varianza_acum,2))) +
+
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+
+
+
+
+##Reglas de asociacion 
+install.packages("arules")
+ install.packages("arulesViz")
+historia_limpianum <- clean_historia[,c(9,10,11,12,13,15,17)]
+historia_limpianum<-historia_limpianum %>% 
+  rename(
+    Precio_Catalogo = ...9,
+    Precio_Venta_sin_iva = ...10,
+    Pronostico = ...11,
+    Unidades_Vendidas = ...12,
+    Venta_neta_sin_iva = ...13,
+    Utilidad = ...15,
+    PrecioReal = ...17
+  )
+
+historia_limpianum <-historia_limpianum[-1,]
+historia_limpianum<-historia_limpianum[complete.cases(historia_limpianum), ]
+
+historia_limpianum_rules <- apriori(historia_limpianum, parameter = list(support = 0.01, confidence = 0.5))
+inspect(head(sort(historia_limpianum_rules, by = "confidence"), 3))
+
+
+historia_limpianum_rules_increased_support <- apriori(historia_limpianum, parameter = list(support = 0.02, confidence = 0.5))
+# This generates only one rule in the output.
+inspect(head(sort(historia_limpianum_rules_increased_support, by = "confidence"), 3))
+
+subsets <- which(colSums(is.subset(historia_limpianum_rules, historia_limpianum_rules)) > 2)
+historia_limpianum_rules <- historia_limpianum_rules[-subsets]
+inspect(head(sort(historia_limpianum_rules, by = "confidence"), 3))
+
+
+
+historia_limpianum_rules_chi2 <- apriori(historia_limpianum, parameter = list(support = 0.01, confidence = 0.5,arem="chi2"))
+inspect(head(sort(historia_limpianum_rules_chi2, by = "confidence"), 3))
+
+
