@@ -1,4 +1,5 @@
 setwd("C:/Users/Cristian/Documents/uvg2019 2do semestre/data science/proyectos/proyecto2/data/Guatemala")
+setwd("C:/Users/jazmi/OneDrive/Documentos/GitHub/Analysis-Lacansco")
 library("readxl")
 library("readxl")
 library("dplyr")
@@ -548,6 +549,39 @@ biplot(x = pca, scale = 0, cex = 0.6, col = c("blue4", "brown3"))
 pca$rotation <- -pca$rotation
 pca$x        <- -pca$x
 biplot(x = pca, scale = 0, cex = 0.6, col = c("blue4", "brown3"))
+
+library("factoextra")
+fviz_eig(pca)
+fviz_pca_ind(pca,
+             col.ind = "cos2", # Color by the quality of representation
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+)
+
+
+fviz_pca_var(pca,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+)
+
+library(factoextra)
+# Eigenvalues
+eig.val <- get_eigenvalue(pca)
+eig.val
+
+# Results for Variables
+res.var <- get_pca_var(pca)
+res.var$coord          # Coordinates
+res.var$contrib        # Contributions to the PCs
+res.var$cos2           # Quality of representation 
+# Results for individuals
+res.ind <- get_pca_ind(pca)
+res.ind$coord          # Coordinates
+res.ind$contrib        # Contributions to the PCs
+res.ind$cos2           # Quality of representation 
+
+##link uti http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/118-principal-component-analysis-in-r-prcomp-vs-princomp/
 
 ##calculando y graficando propagacion de varianza
 library(ggplot2)
