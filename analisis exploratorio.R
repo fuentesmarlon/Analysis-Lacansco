@@ -651,3 +651,18 @@ historia_limpianum_rules_chi2 <- apriori(historia_limpianum, parameter = list(su
 inspect(head(sort(historia_limpianum_rules_chi2, by = "confidence"), 3))
 
 
+
+##matriz de correlacion visual 
+library(corrplot)
+
+cor(historia_centrada)
+
+
+##Correlation matrix 
+prueba <- na.omit(historia_centrada)
+
+prueba <-   cor(prueba,method  ="pearson")
+prueba <-round (prueba, digits=2)
+corrplot(prueba,tl.col = "black",tl.srt = 45)
+corrplot(prueba, method ="shade",tl.col = "black",tl.srt = 45,order="AOE") ##ESTA ES LA QUE MEJOR SALE
+col<- colorRampPalette(c("#BB4444","#EE9988","#FFFFFF","#77AADD","#4477AA"))
