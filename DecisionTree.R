@@ -72,7 +72,7 @@ cfm
 
 ct<-trainControl(method = "cv",train[,1:4],number=3, verboseIter=T)
 
-modelorf<-train(Categoria~.,data=train,method="rf",trControl = ct)
+modelorf<-train(Categoria~ Pagina + Precio.Catalogo,data=train,method="rf",trControl = ct)
 
 prediccionRF<-predict(modelorf,newdata = test[,1:4])
 
