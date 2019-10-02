@@ -54,24 +54,27 @@ train<-datos[trainRowsNumber,]
 test<-datos[-trainRowsNumber,]
 
 #3 variables categoria
-dt_model<-rpart(Categoria~Pedido.Real+Precio.Catalogo,datos, method = "class")
+dt_model<-rpart(Categoria~Unidades.Vendidas,datos, method = "class")
 
 #categoria vs pedido
-dt_model2<-rpart(Categoria~Pedido.Real,datos, method = "class")
+dt_model2<-rpart(Categoria~Unidades.Vendidas,datos, method = "class")
 
 
 #ventas
 dt_model<-rpart(Pedido.Real~Categoria+Precio.Catalogo,datos, method = "anova")
 #tipo de pagina vs pedido real
 datos$Pedido.Real[datos$Pedido.Real == 0] <-NA
-dt_model_tipo_pagina<-rpart(Tipo.pagina~Pedido.Real,datos, method = "class")
+datos$Unidades.Vendidas[datos$Unidades.Vendidas == 0] <- NA
+dt_model_tipo_pagina<-rpart(Tipo.pagina~Unidades.Vendidas+Precio.Catalogo,datos, method = "class")
+#Linea
+dt_model<-rpart(Categoria~Precio.Catalogo,datos, method = "class")
 
 
 plot(dt_model);text(dt_model)
 
 prp(dt_model)
 
-rpart.plot(dt_model_tipo_pagina)
+rpart.plot(dt_model)
 
 
 

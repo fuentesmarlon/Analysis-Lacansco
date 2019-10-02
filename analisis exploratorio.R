@@ -1,4 +1,4 @@
-setwd("C:/Users/Cristian/Documents/uvg2019 2do semestre/data science/proyectos/proyecto2/data/Guatemala")
+setwd("C:/Users/Cristian/Documents/uvg2019 2do semestre/data science/proyectos/proyecto2/data/")
 setwd("C:/Users/jazmi/OneDrive/Documentos/GitHub/Analysis-Lacansco")
 library("readxl")
 library("readxl")
@@ -12,6 +12,7 @@ library(fpc) #para hacer el plotcluster
 library(NbClust) #Para determinar el nï¿½mero de clusters ï¿½ptimo
 library(factoextra) #Para hacer grï¿½ficos bonitos de clustering
 library(ggplot2)
+library(stringr)
 historia <- read_excel("Catalogo Guatemala 2018-2019.xlsx", sheet = 1)
 
 UnidadesPorSector <- read_excel("UnidadesPorSectorNew.xlsx", sheet = 1)
@@ -30,7 +31,8 @@ clean_historia <- data.frame(lapply(clean_historia, function(v) {
   if (is.character(v)) return(toupper(v))
   else return(v)
 }))
-
+datos$Descripcion[is.na(datos$Descripcion)] <- 0
+sum(datos$Unidades.Vendidas[datos$Descripcion == "TOP SECRET ROLL-ON BABY POWDER 80G"], na.rm = T)
 
 Paginacion20152019 = separate(data =  Paginacion20152019, 
                               col  =  `Año Mes`,  
@@ -63,6 +65,11 @@ observaciones_sin_na <- Paginacion20152019[complete.cases(Paginacion20152019$Obs
 
 
 ##barplots unidades por sector
+ggplot(data = clean_historia)+
+  xlab("Cantidad por tipo de pagina")+
+  ggtitle("Tipo de pagina")
+  geom_bar(mapping = aes(x =Tipo.pagina))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 
 
 ggplot(data = UnidadesPorSector)+
@@ -96,19 +103,27 @@ ggplot(data = UnidadesPorSector)+
     xlab("Cantidad por contingencia")+
     geom_bar(mapping = aes(x = ...21))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
-  ggplot(data = clean_historia)+
+  ggplot(data = clean_historia[!is.na(clean_historia$Tipo.pagina),])+
     xlab("Cantidad por pagina")+
-    geom_bar(mapping = aes(x = ...22))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    ggtitle("Tipo Pagina")+
+    geom_bar(mapping = aes(x = Tipo.pagina))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
   ggplot(data = clean_historia)+
     xlab("Cantidad por tipo de precio")+
+    ggtitle("Tipo de Precio")
     geom_bar(mapping = aes(x = ...23))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
-  
-  ggplot(data = clean_historia)+
-    xlab("Cantidad por tipo comision")+
-    geom_bar(mapping = aes(x = ...25))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  #clean_historia$Tipo.Precio[na.omit(clean_historia$Tipo.Precio)]
+  #clean_historia$Tipo.Precio[clean_historia$Tipo.Precio]
+  #clean_historia$Tipo.Precio[str_remove_all(clean_historia$Tipo.Precio, "PRECIO NUNCA ANTES VISTO")]
+  #clean_historia$Tipo.Precio[str_remove_all(clean_historia$Tipo.Precio, "NA")]
+  ggplot(data = clean_historia[clean_historia$Tipo.Precio!="PRECIO NUNCA ANTES VISTO",])+
+    xlab("Cantidad por tipo precio")+
+    ggtitle("Tipo de Precio")+
+    geom_bar(mapping = aes(x = Tipo.Precio))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+  #filtrar na
+  Filter(function(x) !all(is.na(x)), clean_historia)
   
   clean_historia$...27[clean_historia$...27 == "NO APLICA"] <- NA
   
@@ -116,13 +131,23 @@ ggplot(data = UnidadesPorSector)+
     xlab("Cantidad por atributo neto")+
     geom_bar(mapping = aes(x = ...27))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
+  clean_historia <- clean_historia[!is.na(clean_historia$Energy.Chart),]
+  clean_historia <- clean_historia[clean_historia$Energy.Chart !="OFERTA ESPECIAL",]
+  
   ggplot(data = clean_historia)+
     xlab("Cantidad por Energy chart")+
-    geom_bar(mapping = aes(x = ...28))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    ggtitle("Energy chart")+
+    geom_bar(mapping = aes(x = Energy.Chart))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  #remover na
+  clean_historia <- clean_historia[!is.na(clean_historia$Promociones),]
+  clean_historia <- clean_historia[clean_historia$Promociones !="1X 3X",]
+  clean_historia <- clean_historia[clean_historia$Promociones !="1X 4X",]
+  clean_historia <- clean_historia[clean_historia$Promociones !="2 X 2 X",]
   
   ggplot(data = clean_historia)+
     xlab("Cantidad por Promociones")+
-    geom_bar(mapping = aes(x = ...29))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    ggtitle("Promociones")+
+    geom_bar(mapping = aes(x = Promociones))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
   
   ggplot(data = clean_historia)+ 
     xlab("Cantidad por Recursos especial")+
