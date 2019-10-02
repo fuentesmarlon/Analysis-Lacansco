@@ -9,8 +9,8 @@ library(cluster) #Para calcular la silueta
 library(e1071)#para cmeans
 library(mclust) #mixtures of gaussians
 library(fpc) #para hacer el plotcluster
-library(NbClust) #Para determinar el n�mero de clusters �ptimo
-library(factoextra) #Para hacer gr�ficos bonitos de clustering
+library(NbClust) #Para determinar el nï¿½mero de clusters ï¿½ptimo
+library(factoextra) #Para hacer grï¿½ficos bonitos de clustering
 library(ggplot2)
 historia <- read_excel("Catalogo Guatemala 2018-2019.xlsx", sheet = 1)
 
@@ -33,14 +33,14 @@ clean_historia <- data.frame(lapply(clean_historia, function(v) {
 
 
 Paginacion20152019 = separate(data =  Paginacion20152019, 
-                              col  =  `A�o Mes`,  
-                              into =  c("A�o", "Mes"), 
+                              col  =  `Año Mes`,  
+                              into =  c("Año", "Mes"), 
                               sep  =  4, remove = TRUE,
                               convert = TRUE )
 
 #Limpieza de paginacion20152019 hoja 1
 # quitar tildes y comas
-Paginacion20152019$Descripcion <- chartr('áéíóúñÑ','aeiounN', Paginacion20152019$Descripcion)
+Paginacion20152019$Descripcion <- chartr('Ã¡Ã©Ã­Ã³ÃºÃ±Ã‘','aeiounN', Paginacion20152019$Descripcion)
 Paginacion20152019$Descripcion = gsub("[[:punct:]]", "", Paginacion20152019$Descripcion)
 pagina_sin_na <- Paginacion20152019[complete.cases(Paginacion20152019$Pagina),]
 
@@ -291,12 +291,12 @@ prop.table(table(g2$Species))*100
 g3<- datos[datos$grupo==3,]
 prop.table(table(g3$Species))*100
 
-plotcluster(historia[,1:29],km$cluster) #grafica la ubicación de los clusters
+plotcluster(historia[,1:29],km$cluster) #grafica la ubicaciÃ³n de los clusters
 
-#Clustering jerárquico
-hc<-hclust(dist(historia[,1:29])) #Genera el clustering jerárquico de los datos
+#Clustering jerÃ¡rquico
+hc<-hclust(dist(historia[,1:29])) #Genera el clustering jerÃ¡rquico de los datos
 plot(hc) #Genera el dendograma
-rect.hclust(hc,k=3) #Dibuja el corte de los grupos en el gráfico
+rect.hclust(hc,k=3) #Dibuja el corte de los grupos en el grÃ¡fico
 groups<-cutree(hc,k=3) #corta el dendograma, determinando el grupo de cada fila
 datos$gruposHC<-groups
 
@@ -318,23 +318,23 @@ g1MC<-datos[datos$mxGau==1,]
 g2MC<-datos[datos$mxGau==2,]
 g3MC<-datos[datos$mxGau==3,]
 
-#Método de la silueta para las k-medias
+#MÃ©todo de la silueta para las k-medias
 silkm<-silhouette(km$cluster,dist(historia[,1:29]))
-mean(silkm[,3]) #0.55, no es la mejor partición pero no está mal
+mean(silkm[,3]) #0.55, no es la mejor particiÃ³n pero no estÃ¡ mal
 
-#Método de la silueta para clustering jerárquico
+#MÃ©todo de la silueta para clustering jerÃ¡rquico
 silch<-silhouette(groups,dist(historia[,1:29]))
-mean(silch[,3]) #0.51, no es la mejor partición pero no está mal
+mean(silch[,3]) #0.51, no es la mejor particiÃ³n pero no estÃ¡ mal
 
-#Método de la silueta para fuzzy cmeans
+#MÃ©todo de la silueta para fuzzy cmeans
 silfcm<-silhouette(fcm$cluster,dist(historia[,1:29]))
-mean(silfcm[,3]) #0.54, no es la mejor partición pero no está mal
+mean(silfcm[,3]) #0.54, no es la mejor particiÃ³n pero no estÃ¡ mal
 
-#Método de la silueta para mixture of gaussians
+#MÃ©todo de la silueta para mixture of gaussians
 silmg<-silhouette(mc$classification,dist(historia[,1:29]))
-mean(silmg[,3]) #0.50, no es la mejor partición pero no está mal
+mean(silmg[,3]) #0.50, no es la mejor particiÃ³n pero no estÃ¡ mal
 
-#Método de Ward para determinar el número correcto de clusteres con k-medias
+#MÃ©todo de Ward para determinar el nÃºmero correcto de clusteres con k-medias
 #Para saber cual es el mejor numero de clusters
 wss <- (nrow(historia[,1:29])-1)*sum(apply(historia[,1:29],2,var))
 
@@ -343,15 +343,15 @@ for (i in 2:10)
 
 plot(1:10, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
 
-#Paquete para saber el mejor n�mero de clusters
+#Paquete para saber el mejor nï¿½mero de clusters
 nb <- NbClust(historia[,1:29], distance = "euclidean", min.nc = 2,
               max.nc = 10, method = "complete", index ="all")
 
-#Visualizaci�n de los clusters con factoextra
-#Visualizaci�n de las k-medias
+#Visualizaciï¿½n de los clusters con factoextra
+#Visualizaciï¿½n de las k-medias
 fviz_cluster(km, data = historia[,1:29],geom = "point", ellipse.type = "norm")
 
-#Visualizaci�n de cluster jer�rquico
+#Visualizaciï¿½n de cluster jerï¿½rquico
 hc.cut<-hcut(historia[,1:29], k=3, hc_method = "complete")
 fviz_dend(hc.cut, show_labels = FALSE, rect = TRUE)
 fviz_cluster(hc.cut, ellipse.type = "convex")
@@ -374,12 +374,12 @@ prop.table(table(g2$Species))*100
 g3<- datos[datos$grupo==3,]
 prop.table(table(g3$Species))*100
 
-plotcluster(Paginacion20152019[,1:17],km$cluster) #grafica la ubicación de los clusters
+plotcluster(Paginacion20152019[,1:17],km$cluster) #grafica la ubicaciÃ³n de los clusters
 
-#Clustering jerárquico
-hc<-hclust(dist(Paginacion20152019[,1:17])) #Genera el clustering jerárquico de los datos
+#Clustering jerÃ¡rquico
+hc<-hclust(dist(Paginacion20152019[,1:17])) #Genera el clustering jerÃ¡rquico de los datos
 plot(hc) #Genera el dendograma
-rect.hclust(hc,k=3) #Dibuja el corte de los grupos en el gráfico
+rect.hclust(hc,k=3) #Dibuja el corte de los grupos en el grÃ¡fico
 groups<-cutree(hc,k=3) #corta el dendograma, determinando el grupo de cada fila
 datos$gruposHC<-groups
 
@@ -401,23 +401,23 @@ g1MC<-datos[datos$mxGau==1,]
 g2MC<-datos[datos$mxGau==2,]
 g3MC<-datos[datos$mxGau==3,]
 
-#Método de la silueta para las k-medias
+#MÃ©todo de la silueta para las k-medias
 silkm<-silhouette(km$cluster,dist(Paginacion20152019[,1:17]))
-mean(silkm[,3]) #0.55, no es la mejor partición pero no está mal
+mean(silkm[,3]) #0.55, no es la mejor particiÃ³n pero no estÃ¡ mal
 
-#Método de la silueta para clustering jerárquico
+#MÃ©todo de la silueta para clustering jerÃ¡rquico
 silch<-silhouette(groups,dist(Paginacion20152019[,1:17]))
-mean(silch[,3]) #0.51, no es la mejor partición pero no está mal
+mean(silch[,3]) #0.51, no es la mejor particiÃ³n pero no estÃ¡ mal
 
-#Método de la silueta para fuzzy cmeans
+#MÃ©todo de la silueta para fuzzy cmeans
 silfcm<-silhouette(fcm$cluster,dist(Paginacion20152019[,1:17]))
-mean(silfcm[,3]) #0.54, no es la mejor partición pero no está mal
+mean(silfcm[,3]) #0.54, no es la mejor particiÃ³n pero no estÃ¡ mal
 
-#Método de la silueta para mixture of gaussians
+#MÃ©todo de la silueta para mixture of gaussians
 silmg<-silhouette(mc$classification,dist(Paginacion20152019[,1:17]))
-mean(silmg[,3]) #0.50, no es la mejor partición pero no está mal
+mean(silmg[,3]) #0.50, no es la mejor particiÃ³n pero no estÃ¡ mal
 
-#Método de Ward para determinar el número correcto de clusteres con k-medias
+#MÃ©todo de Ward para determinar el nÃºmero correcto de clusteres con k-medias
 #Para saber cual es el mejor numero de clusters
 wss <- (nrow(Paginacion20152019[,1:17])-1)*sum(apply(Paginacion20152019[,1:17],2,var))
 
@@ -426,15 +426,15 @@ for (i in 2:10)
 
 plot(1:10, wss, type="b", xlab="Number of Clusters",  ylab="Within groups sum of squares")
 
-#Paquete para saber el mejor n�mero de clusters
+#Paquete para saber el mejor nï¿½mero de clusters
 nb <- NbClust(Paginacion20152019[,1:17], distance = "euclidean", min.nc = 2,
               max.nc = 10, method = "complete", index ="all")
 
-#Visualizaci�n de los clusters con factoextra
-#Visualizaci�n de las k-medias
+#Visualizaciï¿½n de los clusters con factoextra
+#Visualizaciï¿½n de las k-medias
 fviz_cluster(km, data = Paginacion20152019[,1:17],geom = "point", ellipse.type = "norm")
 
-#Visualizaci�n de cluster jer�rquico
+#Visualizaciï¿½n de cluster jerï¿½rquico
 hc.cut<-hcut(Paginacion20152019[,1:17], k=3, hc_method = "complete")
 fviz_dend(hc.cut, show_labels = FALSE, rect = TRUE)
 fviz_cluster(hc.cut, ellipse.type = "convex")
@@ -514,7 +514,7 @@ t_historia_centrada
 pc_scores <- t_eigenvectors %*% t_historia_centrada
 rownames(pc_scores) <- c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7")
 
-# Se vuelve a transponer para que los datos est�n en modo tabla
+# Se vuelve a transponer para que los datos estén en modo tabla
 t(pc_scores)
 
 datos_recuperados <- t(eigen$vectors %*% pc_scores)
@@ -666,3 +666,62 @@ prueba <-round (prueba, digits=2)
 corrplot(prueba,tl.col = "black",tl.srt = 45)
 corrplot(prueba, method ="shade",tl.col = "black",tl.srt = 45,order="AOE") ##ESTA ES LA QUE MEJOR SALE
 col<- colorRampPalette(c("#BB4444","#EE9988","#FFFFFF","#77AADD","#4477AA"))
+#series de tiempo en unidades vendidas
+library(forecast)
+library(tseries)
+#Transformamos los datos en una serie temporal 
+#prueba con codigo catalogo
+co2ts<-ts(historia$`Codigo Catalogo`, start = c(1959,1), frequency = 12)
+print(co2ts)
+library(ggfortify)
+autoplot(co2ts, ts.colour = "blue", ts.linetype = "dashed")
+#venta neta iva
+co2ts<-ts(historia$`Venta Neta s/iva`, start = c(1959,1), frequency = 12)
+print(co2ts)
+library(ggfortify)
+autoplot(co2ts, ts.colour = "blue", ts.linetype = "dashed")
+autoplot(acf(co2ts, plot = FALSE)
+#unidades vendidas
+co2ts<-ts(historia$`Unidades Vendidas`, start = c(1959,1), frequency = 12)
+print(co2ts)
+library(ggfortify)
+autoplot(co2ts, ts.colour = "blue", ts.linetype = "dashed")
+autoplot(acf(co2ts, plot = FALSE)
+         autoplot(stl(co2ts, s.window = "periodic"), ts.colour = "blue")nsdiffs(co2ts)
+         ndiffs(co2ts)
+         diff.co2ts<-autoplot(diff(co2ts), ts.linetype = "dashed", ts.colour = "darkmagenta")
+         diff.co2ts
+         autoplot(acf(diff(co2ts), plot = FALSE))
+         diffco2<-diff(co2ts)
+         boxplot(diffco2~cycle(diffco2))
+         diff.co2ts.12<-diff(co2ts, lag = 12)
+         autoplot(diff.co2ts.12, ts.colour = "darkorange4", ts.linetype = "dashed")
+         library(tseries)
+         adf<-adf.test(diff.co2ts.12)
+         adf$p.value
+         kpss<-kpss.test(diff.co2ts.12)
+         kpss$p.value
+         autoplot(acf(diff.co2ts.12, plot = FALSE))
+         library(forecast)
+         arima1<- Arima(co2ts, order=c(0,1,2), seasonal=list(order=c(0,1,1),period=12))
+         arima2<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(2,1,0),period=12))
+         arima3<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(2,1,1),period=12))
+         arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
+         arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
+         arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
+         arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
+         AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+         BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+         autoplot(pacf(arima6$residuals, plot = FALSE))
+         ggtsdiag(arima6)
+         bp <- Box.test(arima6$residuals) # Test de Box-Pierce
+         bp$p.value
+         lb <- Box.test(arima6$residuals, type="Ljung-Box") # Test de Ljung-Box
+         lb$p.value
+         jb <- jarque.bera.test(arima6$residuals) # Test de Jarque-Bera
+         jb$p.value
+         sht<-shapiro.test(arima6$residuals) $ # Test de Shapiro-Wilk
+           sht$p.value
+         auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
+         forecast1<-forecast(arima6, level = c(95), h = 50)
+         autoplot(forecast1)
