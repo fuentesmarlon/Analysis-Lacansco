@@ -59,7 +59,7 @@ UnidadesPorSector[is.na(UnidadesPorSector)] <- 0
 ##AQUI ell "165319", es la fila donde esta el dato. solo eso se modifica
 datos<-as.data.frame(t(UnidadesPorSector[6213,1:58]))
 ##Prueba para series de tiempo 
-prueba <- ts(datos, start=c(2015, 1), end=c(2018, 11), frequency=12) 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 12), frequency=12) 
 co2ts<-prueba
 
 print(co2ts)
@@ -137,7 +137,7 @@ autoplot(forecast1)
 ##AQUI ell "165319", es la fila donde esta el dato. solo eso se modifica
 datos<-as.data.frame(t(UnidadesPorSector[6213,1:58]))
 ##Prueba para series de tiempo 
-prueba <- ts(datos, start=c(2015, 1), end=c(2018, 11), frequency=12) 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 12), frequency=12) 
 co2ts<-prueba
 
 print(co2ts)
@@ -187,14 +187,18 @@ jb$p.value
 sht<-shapiro.test(arima6$residuals) $ # Test de Shapiro-Wilk
   sht$p.value
 auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
-forecast1<-forecast(arima6, level = c(95), h = 50)
+#fit<-Arima(co2ts,order = c(1,1,0), seasonal = c(1,0,0))
+
+forecast1<-forecast(arima6, level = c(10), h = 15)
 autoplot(forecast1)
-
-
+#autoplot(forecast(fit3))
+comparar1 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+forecast1
+comparar1
 ##----------------------------------------2 2313----------------------------------------
 datos<-as.data.frame(t(UnidadesPorSector[2313,1:58]))
 ##Prueba para series de tiempo 
-prueba <- ts(datos, start=c(2015, 1), end=c(2018, 11), frequency=12) 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 12), frequency=12) 
 co2ts<-prueba
 
 print(co2ts)
@@ -244,14 +248,18 @@ jb$p.value
 sht<-shapiro.test(arima5$residuals) $ # Test de Shapiro-Wilk
   sht$p.value
 auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
-forecast1<-forecast(arima5, level = c(95), h = 50)
-autoplot(forecast1)
+forecast2<-forecast(arima5, level = c(10), h = 15)
+autoplot(forecast2)
+
+comparar2 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar2
+forecast2
 
 
 ##----------------------------------------3 5296----------------------------------------
 datos<-as.data.frame(t(UnidadesPorSector[5296,1:58]))
 ##Prueba para series de tiempo 
-prueba <- ts(datos, start=c(2015, 1), end=c(2018, 11), frequency=12) 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 11), frequency=12) 
 co2ts<-prueba
 
 print(co2ts)
@@ -301,15 +309,17 @@ jb$p.value
 sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
   sht$p.value
 auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
-forecast1<-forecast(arima1, level = c(95), h = 50)
-autoplot(forecast1)
+forecast3<-forecast(arima1, level = c(10), h = 15)
+autoplot(forecast3)
 
-
+comparar3 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar3
+forecast3
 ##----------------------------------------4 6057----------------------------------------
 
 datos<-as.data.frame(t(UnidadesPorSector[6057,1:58]))
 ##Prueba para series de tiempo 
-prueba <- ts(datos, start=c(2015, 1), end=c(2018, 11), frequency=12) 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 12), frequency=12) 
 co2ts<-prueba
 
 print(co2ts)
@@ -359,13 +369,17 @@ jb$p.value
 sht<-shapiro.test(arima6$residuals) $ # Test de Shapiro-Wilk
   sht$p.value
 auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
-forecast1<-forecast(arima6, level = c(95), h = 50)
-autoplot(forecast1)
+forecast4<-forecast(arima6, level = c(10), h = 15)
+autoplot(forecast4)
+
+comparar4 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar4
+forecast4
 ##----------------------------------------5 4084----------------------------------------
 
 datos<-as.data.frame(t(UnidadesPorSector[4084,1:58]))
 ##Prueba para series de tiempo 
-prueba <- ts(datos, start=c(2015, 1), end=c(2018, 11), frequency=12) 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 11), frequency=12) 
 co2ts<-prueba
 
 print(co2ts)
@@ -415,8 +429,12 @@ jb$p.value
 sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
   sht$p.value
 auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
-forecast1<-forecast(arima1, level = c(95), h = 50)
-autoplot(forecast1)
+forecast5<-forecast(arima1, level = c(10), h = 15)
+autoplot(forecast5)
+
+comparar5 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar5
+forecast5
 
 ##Los top5 menos vendidos
 ##1.  ACNÉ SOLUTION MASCA MICRO ABRA OFE	

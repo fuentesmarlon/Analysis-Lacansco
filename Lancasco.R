@@ -16,6 +16,11 @@ library(rpart)
 library(caret)
 library(rpart.plot)
 library(randomForest)
+library(e1071)
+library(caret)
+library(fastDummies)
+library(rpart)
+library(rpart.plot)
 # series de tiempo
 library(ggfortify)
 library(corrplot)
@@ -44,7 +49,7 @@ historia <- data.frame(lapply(historia, function(v) {
 
 # Separar ano y mes 
 historia = separate(data =  historia, 
-                              col  =  `Año Mes`,  
+                              col  =  Año.Mes,  
                               into =  c("Año", "Mes"), 
                               sep  =  4, remove = TRUE,
                               convert = TRUE )
@@ -62,6 +67,7 @@ historia <- historia[complete.cases(historia$Precio.Vta.s.iva),]
 historia$Costo <- sub("NULL", NA, historia$Costo)
 historia <- historia[complete.cases(historia$Costo),]
 
+head(sort(table(historia$Unidades.Vendidas) , decreasing = TRUE), n = 10)
 
 #*******************************************************************************************
 # Paginacion 
@@ -95,5 +101,31 @@ Paginacion20152019$Costo <- sub("NULL", NA, Paginacion20152019$Costo)
 Paginacion20152019 <- Paginacion20152019[complete.cases(Paginacion20152019$Costo),]
 
 
+# separar producto y descripcion 
+UnidadesPorSector = separate(data =  UnidadesPorSector, 
+                              col  =  `Producto - Descripcion`,  
+                              into =  c("Producto", "Descripcion"), 
+                              sep  =  10, remove = TRUE,
+                              convert = TRUE )
 
 
+tablaproductos <- sort(table(UnidadesPorSector$Descripcion) , decreasing = TRUE)
+productos <- names(tablaproductos)
+
+tablaproductoshistoria <- sort(table(UnidadesPorSector$Descripcion) , decreasing = TRUE)
+productoshistoria <- names(tablaproductoshistoria)
+
+
+
+
+
+
+porcentaje<-0.7
+set.seed(123)
+corte <- sample(nrow(historia),nrow(historia)*porcentaje)
+train<-historia[corte,]
+test<-historia[-corte,]
+
+
+dt_model<-rpart(Energy.Chart~Unidades.Vendidas,data=train,method = "class")
+rpart.plot(dt_model)
