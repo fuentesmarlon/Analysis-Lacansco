@@ -7,8 +7,8 @@ library(cluster) #Para calcular la silueta
 library(e1071)#para cmeans
 library(mclust) #mixtures of gaussians
 library(fpc) #para hacer el plotcluster
-library(NbClust) #Para determinar el n�mero de clusters �ptimo
-library(factoextra) #Para hacer gr�ficos bonitos de clustering
+library(NbClust) #Para determinar el nï¿½mero de clusters ï¿½ptimo
+library(factoextra) #Para hacer grï¿½ficos bonitos de clustering
 library(ggplot2)
 library(forecast)
 library(tseries)
@@ -437,8 +437,8 @@ comparar5
 forecast5
 
 ##Los top5 menos vendidos
-##1.  ACN� SOLUTION MASCA MICRO ABRA OFE	
-##2.  ACTION GEL FIJADOR ANTI CA�DA 200 G	
+##1.  ACNÉ SOLUTION MASCA MICRO ABRA OFE	
+##2.  ACTION GEL FIJADOR ANTI CAÍDA 200 G	
 ##3.  ACTION SHAMPOO ANTICAIDA OFERTA	
 ##4.  ADVENTURE ROLL ON 80GRS	
 ##5.  AMUEBLADO DE COMEDOR 6 PERSONAS ESCOCIA	
@@ -731,3 +731,39 @@ auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
 forecast1<-forecast(arima1, level = c(95), h = 50)
 autoplot(forecast1)
 
+#serie de tiempo categorica
+mytable <- table(historia$Pagina...22)
+
+lbls <- paste(names(mytable), "\n", mytable, sep="")
+
+pie(mytable, labels = lbls, 
+    
+    main="Paginacion")
+
+library(lubridate)
+library(dplyr)
+library(forecast)
+library(ggplot2)
+library(scales)
+pjm<- historia
+str(pjm)
+pjm$Pagina...22 <- ymd_hms(pjm$Pagina...22)
+ts_train<-pjm$`Unidades Vendidas` %>% ts(freq= 24)
+ts_train %>% 
+  tail(24*7*4) %>% 
+  decompose() %>% 
+  autoplot()
+msts_cons<-pjm$`Unidades Vendidas` %>% msts( seasonal.periods = c(24, 24*7))
+msts_cons  %>% head(  24 *7 *4 ) %>% mstl() %>% autoplot()   
+
+msts_train <- head(msts_cons, length(msts_cons) - 24*7)
+msts_test <- tail(msts_cons,  24*7)
+
+#subset to more recent period
+msts_train <- tail(msts_train, 24*7*4*3)
+autoplot(msts_train)
+
+stlm_model <- msts_train %>%
+  stlm(lambda = 0) %>% 
+  forecast(h = 24*7) 
+plot(stlm_model)
