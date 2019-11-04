@@ -1,4 +1,4 @@
-setwd("C:/Users/Usuario Dell/Desktop/S8/Data Science/Analysis-Lacansco")
+#setwd("C:/Users/Usuario Dell/Desktop/S8/Data Science/Analysis-Lacansco")
 library("readxl")
 library("readxl")
 library("dplyr")
@@ -28,7 +28,7 @@ library(forecast)
 library(tseries)
 
 
-historia <- read_excel("Catálogo Guatemala 2018-2019.xlsx", sheet = 1)
+historia <- read_excel("CatÃ¡logo Guatemala 2018-2019.xlsx", sheet = 1,col_names=TRUE)
 Paginacion20152019 <- read_excel("Paginacion 2015-2019.xlsx", sheet = 1)
 UnidadesPorSector <- read_excel("UnidadesPorSectorNew.xlsx", sheet = 1)
 
@@ -49,13 +49,13 @@ historia <- data.frame(lapply(historia, function(v) {
 
 # Separar ano y mes 
 historia = separate(data =  historia, 
-                              col  =  Año.Mes,  
-                              into =  c("Año", "Mes"), 
+                              col  =  A?o.Mes,  
+                              into =  c("A?o", "Mes"), 
                               sep  =  4, remove = TRUE,
                               convert = TRUE )
 
 # quitar tildes
-historia$Descripcion <- chartr('ÁÉÍÓÚÑ','AEIOUN', historia$Descripcion)
+historia$Descripcion <- chartr('??????','AEIOUN', historia$Descripcion)
 
 #Quitar nulls de precios
 historia$Precio.Catalogo <- sub("NULL", NA, historia$Precio.Catalogo)
@@ -73,16 +73,16 @@ head(sort(table(historia$Unidades.Vendidas) , decreasing = TRUE), n = 10)
 # Paginacion 
 
 #Limpieza
-# separar año y mes
+# separar a?o y mes
 Paginacion20152019 = separate(data =  Paginacion20152019, 
-                              col  =  `Año Mes`,  
-                              into =  c("Año", "Mes"), 
+                              col  =  `A?o Mes`,  
+                              into =  c("A?o", "Mes"), 
                               sep  =  4, remove = TRUE,
                               convert = TRUE )
 
 
 # quitar tildes
-Paginacion20152019$Descripcion <- chartr('ÁÉÍÓÚÑ','AEIOUN', Paginacion20152019$Descripcion)
+Paginacion20152019$Descripcion <- chartr('??????','AEIOUN', Paginacion20152019$Descripcion)
 
 Paginacion20152019 <- Paginacion20152019[complete.cases(Paginacion20152019$Pagina),]
 
