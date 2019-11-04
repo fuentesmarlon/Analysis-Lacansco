@@ -1,5 +1,31 @@
-library("dplyr")
+setwd("C:/Users/Usuario Dell/Desktop/S8/Data Science/Analysis-Lacansco")
 library("readxl")
+library("readxl")
+library("dplyr")
+library(dplyr)
+library(tidyr)
+library(cluster) #Para calcular la silueta
+library(e1071)#para cmeans
+library(mclust) #mixtures of gaussians
+library(fpc) #para hacer el plotcluster
+library(NbClust) #Para determinar el n�mero de clusters �ptimo
+library(factoextra) #Para hacer gr�ficos bonitos de clustering
+library(ggplot2)
+#arboles
+library(rpart)
+library(caret)
+library(rpart.plot)
+library(randomForest)
+library(e1071)
+library(caret)
+library(fastDummies)
+library(rpart)
+library(rpart.plot)
+# series de tiempo
+library(ggfortify)
+library(corrplot)
+library(forecast)
+library(tseries)
 
 df_unidades <- read_excel("UnidadesPorSectorNew.xlsx")
 
@@ -197,3 +223,296 @@ var_df <- new_df%>%
     med_1811=tot_1811/N,
     var1811 = sum((tot_1811 - med_1811)^2, (N - n())*med_1811^2)/(N - 1)
     )
+
+var_df$sumVar <- rowSums (var_df[, c(3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85,87,89,91,93,95)])
+
+var_prod <- var_df[, c(1,96)]
+
+##----------------------------------------1 22----------------------------------------
+datos<-as.data.frame(t(var_df[22, c(2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94)]))
+##Prueba para series de tiempo 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 11), frequency=12) 
+co2ts<-prueba
+
+print(co2ts)
+autoplot(co2ts, ts.colour = "blue", ts.linetype = "dashed")
+autoplot(acf(co2ts, plot = FALSE))
+autoplot(stl(co2ts, s.window = "periodic"), ts.colour = "blue")
+nsdiffs(co2ts)
+ndiffs(co2ts)
+diff.co2ts<-autoplot(diff(co2ts), ts.linetype = "dashed", ts.colour = "darkmagenta")
+diff.co2ts
+autoplot(acf(diff(co2ts), plot = FALSE))
+diffco2<-diff(co2ts)
+boxplot(diffco2~cycle(diffco2))
+diff.co2ts.12<-diff(co2ts, lag = 12)
+autoplot(diff.co2ts.12, ts.colour = "darkorange4", ts.linetype = "dashed")
+
+adf<-adf.test(diff.co2ts.12)
+adf$p.value
+kpss<-kpss.test(diff.co2ts.12)
+kpss$p.value
+autoplot(acf(diff.co2ts.12, plot = FALSE))
+
+arima1<- Arima(co2ts, order=c(0,1,2), seasonal=list(order=c(0,1,1),period=12))
+arima2<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(2,1,0),period=12))
+arima3<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(2,1,1),period=12))
+arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
+arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
+arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
+arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
+AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+
+##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
+
+autoplot(pacf(arima1$residuals, plot = FALSE))
+ggtsdiag(arima1)
+bp <- Box.test(arima1$residuals) # Test de Box-Pierce
+bp$p.value
+lb <- Box.test(arima1$residuals, type="Ljung-Box") # Test de Ljung-Box
+lb$p.value
+jb <- jarque.bera.test(arima1$residuals) # Test de Jarque-Bera
+jb$p.value
+sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
+  sht$p.value
+auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
+forecast1<-forecast(arima1, level = c(10), h = 15)
+autoplot(forecast1)
+
+comparar1 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar1
+forecast1
+
+
+##----------------------------------------2 35----------------------------------------
+datos<-as.data.frame(t(var_df[35, c(2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94)]))
+##Prueba para series de tiempo 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 11), frequency=12) 
+co2ts<-prueba
+
+print(co2ts)
+autoplot(co2ts, ts.colour = "blue", ts.linetype = "dashed")
+autoplot(acf(co2ts, plot = FALSE))
+autoplot(stl(co2ts, s.window = "periodic"), ts.colour = "blue")
+nsdiffs(co2ts)
+ndiffs(co2ts)
+diff.co2ts<-autoplot(diff(co2ts), ts.linetype = "dashed", ts.colour = "darkmagenta")
+diff.co2ts
+autoplot(acf(diff(co2ts), plot = FALSE))
+diffco2<-diff(co2ts)
+boxplot(diffco2~cycle(diffco2))
+diff.co2ts.12<-diff(co2ts, lag = 12)
+autoplot(diff.co2ts.12, ts.colour = "darkorange4", ts.linetype = "dashed")
+
+adf<-adf.test(diff.co2ts.12)
+adf$p.value
+kpss<-kpss.test(diff.co2ts.12)
+kpss$p.value
+autoplot(acf(diff.co2ts.12, plot = FALSE))
+
+arima1<- Arima(co2ts, order=c(0,1,2), seasonal=list(order=c(0,1,1),period=12))
+arima2<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(2,1,0),period=12))
+arima3<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(2,1,1),period=12))
+arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
+arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
+arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
+arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
+AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+
+##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
+
+autoplot(pacf(arima1$residuals, plot = FALSE))
+ggtsdiag(arima1)
+bp <- Box.test(arima1$residuals) # Test de Box-Pierce
+bp$p.value
+lb <- Box.test(arima1$residuals, type="Ljung-Box") # Test de Ljung-Box
+lb$p.value
+jb <- jarque.bera.test(arima1$residuals) # Test de Jarque-Bera
+jb$p.value
+sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
+  sht$p.value
+auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
+forecast2<-forecast(arima1, level = c(10), h = 15)
+autoplot(forecast2)
+
+comparar2 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar2
+forecast2
+
+
+
+##----------------------------------------3 4----------------------------------------
+datos<-as.data.frame(t(var_df[4, c(2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94)]))
+##Prueba para series de tiempo 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 11), frequency=12) 
+co2ts<-prueba
+
+print(co2ts)
+autoplot(co2ts, ts.colour = "blue", ts.linetype = "dashed")
+autoplot(acf(co2ts, plot = FALSE))
+autoplot(stl(co2ts, s.window = "periodic"), ts.colour = "blue")
+nsdiffs(co2ts)
+ndiffs(co2ts)
+diff.co2ts<-autoplot(diff(co2ts), ts.linetype = "dashed", ts.colour = "darkmagenta")
+diff.co2ts
+autoplot(acf(diff(co2ts), plot = FALSE))
+diffco2<-diff(co2ts)
+boxplot(diffco2~cycle(diffco2))
+diff.co2ts.12<-diff(co2ts, lag = 12)
+autoplot(diff.co2ts.12, ts.colour = "darkorange4", ts.linetype = "dashed")
+
+adf<-adf.test(diff.co2ts.12)
+adf$p.value
+kpss<-kpss.test(diff.co2ts.12)
+kpss$p.value
+autoplot(acf(diff.co2ts.12, plot = FALSE))
+
+arima1<- Arima(co2ts, order=c(0,1,2), seasonal=list(order=c(0,1,1),period=12))
+arima2<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(2,1,0),period=12))
+arima3<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(2,1,1),period=12))
+arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
+arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
+arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
+arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
+AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+
+##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
+
+autoplot(pacf(arima1$residuals, plot = FALSE))
+ggtsdiag(arima1)
+bp <- Box.test(arima1$residuals) # Test de Box-Pierce
+bp$p.value
+lb <- Box.test(arima1$residuals, type="Ljung-Box") # Test de Ljung-Box
+lb$p.value
+jb <- jarque.bera.test(arima1$residuals) # Test de Jarque-Bera
+jb$p.value
+sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
+  sht$p.value
+auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
+forecast3<-forecast(arima1, level = c(10), h = 15)
+autoplot(forecast3)
+
+comparar3 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar3
+forecast3
+
+
+
+##----------------------------------------4 46----------------------------------------
+datos<-as.data.frame(t(var_df[46, c(2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94)]))
+##Prueba para series de tiempo 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 11), frequency=12) 
+co2ts<-prueba
+
+print(co2ts)
+autoplot(co2ts, ts.colour = "blue", ts.linetype = "dashed")
+autoplot(acf(co2ts, plot = FALSE))
+autoplot(stl(co2ts, s.window = "periodic"), ts.colour = "blue")
+nsdiffs(co2ts)
+ndiffs(co2ts)
+diff.co2ts<-autoplot(diff(co2ts), ts.linetype = "dashed", ts.colour = "darkmagenta")
+diff.co2ts
+autoplot(acf(diff(co2ts), plot = FALSE))
+diffco2<-diff(co2ts)
+boxplot(diffco2~cycle(diffco2))
+diff.co2ts.12<-diff(co2ts, lag = 12)
+autoplot(diff.co2ts.12, ts.colour = "darkorange4", ts.linetype = "dashed")
+
+adf<-adf.test(diff.co2ts.12)
+adf$p.value
+kpss<-kpss.test(diff.co2ts.12)
+kpss$p.value
+autoplot(acf(diff.co2ts.12, plot = FALSE))
+
+arima1<- Arima(co2ts, order=c(0,1,2), seasonal=list(order=c(0,1,1),period=12))
+arima2<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(2,1,0),period=12))
+arima3<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(2,1,1),period=12))
+arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
+arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
+arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
+arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
+AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+
+##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
+
+autoplot(pacf(arima1$residuals, plot = FALSE))
+ggtsdiag(arima1)
+bp <- Box.test(arima1$residuals) # Test de Box-Pierce
+bp$p.value
+lb <- Box.test(arima1$residuals, type="Ljung-Box") # Test de Ljung-Box
+lb$p.value
+jb <- jarque.bera.test(arima1$residuals) # Test de Jarque-Bera
+jb$p.value
+sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
+  sht$p.value
+auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
+forecast4<-forecast(arima1, level = c(10), h = 15)
+autoplot(forecast4)
+
+comparar4 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar4
+forecast4
+
+
+
+##----------------------------------------5 7----------------------------------------
+datos<-as.data.frame(t(var_df[7, c(2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,88,90,92,94)]))
+##Prueba para series de tiempo 
+prueba <- ts(datos, start=c(2015, 1), end=c(2017, 11), frequency=12) 
+co2ts<-prueba
+
+print(co2ts)
+autoplot(co2ts, ts.colour = "blue", ts.linetype = "dashed")
+autoplot(acf(co2ts, plot = FALSE))
+autoplot(stl(co2ts, s.window = "periodic"), ts.colour = "blue")
+nsdiffs(co2ts)
+ndiffs(co2ts)
+diff.co2ts<-autoplot(diff(co2ts), ts.linetype = "dashed", ts.colour = "darkmagenta")
+diff.co2ts
+autoplot(acf(diff(co2ts), plot = FALSE))
+diffco2<-diff(co2ts)
+boxplot(diffco2~cycle(diffco2))
+diff.co2ts.12<-diff(co2ts, lag = 12)
+autoplot(diff.co2ts.12, ts.colour = "darkorange4", ts.linetype = "dashed")
+
+adf<-adf.test(diff.co2ts.12)
+adf$p.value
+kpss<-kpss.test(diff.co2ts.12)
+kpss$p.value
+autoplot(acf(diff.co2ts.12, plot = FALSE))
+
+arima1<- Arima(co2ts, order=c(0,1,2), seasonal=list(order=c(0,1,1),period=12))
+arima2<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(2,1,0),period=12))
+arima3<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(2,1,1),period=12))
+arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
+arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
+arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
+arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
+AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+
+##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
+
+autoplot(pacf(arima1$residuals, plot = FALSE))
+ggtsdiag(arima1)
+bp <- Box.test(arima1$residuals) # Test de Box-Pierce
+bp$p.value
+lb <- Box.test(arima1$residuals, type="Ljung-Box") # Test de Ljung-Box
+lb$p.value
+jb <- jarque.bera.test(arima1$residuals) # Test de Jarque-Bera
+jb$p.value
+sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
+  sht$p.value
+auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
+forecast5<-forecast(arima1, level = c(10), h = 15)
+autoplot(forecast5)
+
+comparar5 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
+comparar5
+forecast5
+
+
