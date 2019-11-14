@@ -261,23 +261,23 @@ arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
 arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
 arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
 arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
-AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
-BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+AIC(arima1,arima5,arima6,arima7)
+BIC(arima1,arima5,arima6,arima7)
 
 ##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
 
-autoplot(pacf(arima1$residuals, plot = FALSE))
-ggtsdiag(arima1)
-bp <- Box.test(arima1$residuals) # Test de Box-Pierce
+autoplot(pacf(arima6$residuals, plot = FALSE))
+ggtsdiag(arima6)
+bp <- Box.test(arima6$residuals) # Test de Box-Pierce
 bp$p.value
-lb <- Box.test(arima1$residuals, type="Ljung-Box") # Test de Ljung-Box
+lb <- Box.test(arima6$residuals, type="Ljung-Box") # Test de Ljung-Box
 lb$p.value
-jb <- jarque.bera.test(arima1$residuals) # Test de Jarque-Bera
+jb <- jarque.bera.test(arima6$residuals) # Test de Jarque-Bera
 jb$p.value
-sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
+sht<-shapiro.test(arima6$residuals) $ # Test de Shapiro-Wilk
   sht$p.value
 auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
-forecast1<-forecast(arima1, level = c(10), h = 15)
+forecast1<-forecast(arima6, level = c(10), h = 15)
 autoplot(forecast1)
 
 comparar1 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
@@ -318,8 +318,8 @@ arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
 arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
 arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
 arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
-AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
-BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+AIC(arima1,arima5,arima6,arima7)
+BIC(arima1,arima5,arima6,arima7)
 
 ##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
 
@@ -376,23 +376,23 @@ arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
 arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
 arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
 arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
-AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
-BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+AIC(arima1,arima5,arima6,arima7)
+BIC(arima1,arima5,arima6,arima7)
 
 ##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
 
-autoplot(pacf(arima1$residuals, plot = FALSE))
-ggtsdiag(arima1)
-bp <- Box.test(arima1$residuals) # Test de Box-Pierce
+autoplot(pacf(arima6$residuals, plot = FALSE))
+ggtsdiag(arima6)
+bp <- Box.test(arima6$residuals) # Test de Box-Pierce
 bp$p.value
-lb <- Box.test(arima1$residuals, type="Ljung-Box") # Test de Ljung-Box
+lb <- Box.test(arima6$residuals, type="Ljung-Box") # Test de Ljung-Box
 lb$p.value
-jb <- jarque.bera.test(arima1$residuals) # Test de Jarque-Bera
+jb <- jarque.bera.test(arima6$residuals) # Test de Jarque-Bera
 jb$p.value
-sht<-shapiro.test(arima1$residuals) $ # Test de Shapiro-Wilk
+sht<-shapiro.test(arima6$residuals) $ # Test de Shapiro-Wilk
   sht$p.value
 auto.arima(co2ts, stepwise = FALSE, approximation = FALSE)
-forecast3<-forecast(arima1, level = c(10), h = 15)
+forecast3<-forecast(arima6, level = c(10), h = 15)
 autoplot(forecast3)
 
 comparar3 <- ts(datos, start=c(2018, 1), end=c(2018, 11), frequency=12) 
@@ -434,8 +434,8 @@ arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
 arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
 arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
 arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
-AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
-BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+AIC(arima1,arima5,arima6,arima7)
+BIC(arima1,arima5,arima6,arima7)
 
 ##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
 
@@ -492,8 +492,8 @@ arima4<- Arima(co2ts, order=c(1,1,1), seasonal=list(order=c(2,1,1),period=12))
 arima5<- Arima(co2ts, order=c(1,1,2), seasonal=list(order=c(1,1,1),period=12))
 arima6<- Arima(co2ts, order=c(0,1,1), seasonal=list(order=c(0,1,1),period=12))
 arima7<- Arima(co2ts, order=c(1,1,0), seasonal=list(order=c(1,1,0),period=12))
-AIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
-BIC(arima1,arima2,arima3,arima4,arima5,arima6,arima7)
+AIC(arima1,arima5,arima6,arima7)
+BIC(arima1,arima5,arima6,arima7)
 
 ##EN BASE AL AIC Y BIC, SE ELIGE LOS QUE MENOR VALOR TIENEN PARA ELEGIR QUE ARIMA USAR
 
