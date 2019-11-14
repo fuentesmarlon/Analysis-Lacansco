@@ -1,0 +1,232 @@
+---
+title: "Análisis Predictivo - Grupo 1"
+author: "Grupo 1"
+date: "13/11/2019"
+output: html_document
+---
+A continuación se presenta la documentación del proyecto de análisis predictivo a la empresa Lancasco. El objetivo del presente es poder predecir las ventas para el año 2018, útilizando el algoritmo más apropiado para lo mismo. 
+
+### 0: Librerias Requeridas
+
+  ```{r,message=FALSE}
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(cluster) 
+library(e1071)
+library(mclust) 
+library(fpc) 
+library(NbClust) 
+library(factoextra) 
+library(ggplot2)
+library(rpart)
+library(caret)
+library(rpart.plot)
+library(randomForest)
+library(e1071)
+library(caret)
+library(fastDummies)
+library(rpart)
+library(rpart.plot)
+library(ggfortify)
+library(corrplot)
+library(forecast)
+library(tseries)
+library(stringr)
+  ```
+
+### 1: Lectura de Información
+
+Para esta sección se utiliza la librería "readxl".
+
+
+```{r}
+historia <- read_excel("Catálogo Guatemala 2018-2019.xlsx", sheet = 1,col_names=TRUE)
+Paginacion20152019 <- read_excel("Paginacion 2015-2019.xlsx", sheet = 1)
+UnidadesPorSector <- read_excel("UnidadesPorSectorNew.xlsx", sheet = 1)
+
+```
+
+### 2: Limpieza y Preparación de Datos. 
+
+**Nota:** Es importante notar que se corrigio a mano el archivo de excel llamado:"Unidades por Sector". Ver más en la guia de implementación.
+
+Debido a que muchas veces la información solicitada no se encuentra de la forma ideal, se debe realizar un proceso de limpieza de datos donde se elimine y se corrija información de la data, estos pasos son los siguientes:
+
+1. Renombramiento de columnas:
+
+Al cargar la data, muchas veces R carga el nombre de columnas como algo totalmente diferente. Esto es por muchas razones, pero en este caso es porque las columnas tienen nombre no válidos para el lenguaje. En este paso, se buscan las columnas cuyos nombres fueron cambiados y se le colocan los nombres nuevos
+
+```{r}
+colnames(historia)
+names(historia)[names(historia) == "Pagina...7"] <- "Pagina"
+names(historia)[names(historia) == "Pagina...22"] <- "Tipo.pagina"
+names(historia)[names(historia) == "%..24"] <- "Porcentaje precio"
+names(historia)[names(historia) == "%..26"] <- "Porcentaje comision"
+names(historia)[names(historia) == "Tipo Precio"] <- "Tipo.Precio"
+names(historia)[names(historia) == "Energy Chart"] <- "Energy Chart"
+```
+
+2. Estandarización a Mayúsculas
+
+Esto se realiza para poder manejar correctamente la información, ya que facilita a la hora de manejar la información.
+
+```{r}
+historia <- data.frame(lapply(historia, function(v) {
+  if (is.character(v)) return(toupper(v))
+  else return(v)
+}))
+
+head(historia)
+```
+
+```{r}
+clean_historia <- historia[1:31]
+clean_historia <- data.frame(lapply(clean_historia, function(v) {
+  if (is.character(v)) return(toupper(v))
+  else return(v)
+}))
+
+ggplot(data = clean_historia)+
+  xlab("Cantidad por tipo de pagina")+
+  ggtitle("Tipo de pagina")+
+  geom_bar(mapping = aes(x =Tipo.pagina))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+```
+
+
+3. Eliminación y Correción de Caracteres Especiales
+
+Esto se realiza porque pueden afectar en el momento de trabajar con la data, es posible que el lenguaje tenga problemas para leer o comprender correctamente ciertos carácteres especiales. 
+
+Primero separamos las colúmnas con carácteres especiales
+
+```{r}
+historia = separate(data =  historia, 
+                              col  =  Año.Mes,  
+                              into =  c("A?o", "Mes"), 
+                              sep  =  4, remove = TRUE,
+                              convert = TRUE )
+
+Paginacion20152019 = separate(data =  Paginacion20152019, 
+                              col  =  `Año Mes`,  
+                              into =  c("A?o", "Mes"), 
+                              sep  =  4, remove = TRUE,
+                              convert = TRUE )
+# separar producto y descripcion 
+UnidadesPorSector = separate(data =  UnidadesPorSector, 
+                              col  =  `Producto - Descripcion`,  
+                              into =  c("Producto", "Descripcion"), 
+                              sep  =  10, remove = TRUE,
+                              convert = TRUE )
+```
+
+Luego, continuamos quitando las tildes y espacios innecesarios dentro de la información.
+
+```{r}
+# quitar tildes
+historia$Descripcion <- chartr('??????','AEIOUN', historia$Descripcion)
+
+Paginacion20152019$Descripcion <- chartr('??????','AEIOUN', Paginacion20152019$Descripcion)
+
+Paginacion20152019 <- Paginacion20152019[complete.cases(Paginacion20152019$Pagina),]
+
+#Quitar espacios al inicio y fin
+Paginacion20152019$Pagina = gsub("^ ", "", Paginacion20152019$Pagina)
+Paginacion20152019$Pagina = gsub(" $", "", Paginacion20152019$Pagina)
+
+```
+
+Por último, quitamos valores Nulos ya que son información poco relevante para el análisis. 
+
+```{r}
+historia$Precio.Catalogo <- sub("NULL", NA, historia$Precio.Catalogo)
+historia <- historia[complete.cases(historia$Precio.Catalogo),]
+
+historia$Precio.Vta.s.iva <- sub("NULL", NA, historia$Precio.Vta.s.iva)
+historia <- historia[complete.cases(historia$Precio.Vta.s.iva),]
+
+historia$Costo <- sub("NULL", NA, historia$Costo)
+historia <- historia[complete.cases(historia$Costo),]
+
+head(sort(table(historia$Unidades.Vendidas) , decreasing = TRUE), n = 10)
+
+Paginacion20152019$`Precio Catalogo` <- sub("NULL", NA, Paginacion20152019$`Precio Catalogo`)
+Paginacion20152019 <- Paginacion20152019[complete.cases(Paginacion20152019$`Precio Catalogo`),]
+
+Paginacion20152019$`Precio Vta s/iva` <- sub("NULL", NA, Paginacion20152019$`Precio Vta s/iva`)
+Paginacion20152019 <- Paginacion20152019[complete.cases(Paginacion20152019$`Precio Vta s/iva`),]
+
+Paginacion20152019$Costo <- sub("NULL", NA, Paginacion20152019$Costo)
+Paginacion20152019 <- Paginacion20152019[complete.cases(Paginacion20152019$Costo),]
+clean_historia[is.na(clean_historia$`Precio Catalogo`),] <- 0
+
+
+```
+
+### 3: Análisis Exploratorio
+
+Se realiza un análisis exploratorio que permite entender de mejor la información. Ayuda a entender la distribución de la información, y encontrar puntos de interes útiles para el análisis. A continuación, se mostrarán los pasos tomados pero no se explicarán a profundidad el resultado, para esto leer el reporte final del proyecto. 
+
+Primero, se realiza gráficas de barras para ver las unidades vendidas por sector. 
+
+
+A continuación se calcula por tipo de categoriá, para observar que categoriá genera las mayores ventas. Esto ayudará a entender que categorias tomar encuenta en el algoritmo. 
+
+```{r}
+ggplot(data = UnidadesPorSector)+
+  xlab("Cantidad por categoria")+
+  geom_bar(mapping = aes(x =DescripcionCategoria))+ 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Seguimos con realizar un visualización de unidades por el sector de venta.
+
+```{r}
+ggplot(data = UnidadesPorSector)+
+  xlab("Cantidad por sector")+
+  geom_bar(mapping = aes(x =Sector))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r}
+  ggplot(data = clean_historia[!is.na(clean_historia$Tipo.pagina),])+
+    xlab("Cantidad por pagina")+
+    ggtitle("Tipo Pagina")+
+    geom_bar(mapping = aes(x = Tipo.pagina))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+ggplot(data = clean_historia[clean_historia$Tipo.Precio!="PRECIO NUNCA ANTES VISTO",])+
+    xlab("Cantidad por tipo precio")+
+    ggtitle("Tipo de Precio")+
+    geom_bar(mapping = aes(x = Tipo.Precio))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+ggplot(data = clean_historia)+
+    xlab("Cantidad por Energy chart")+
+    ggtitle("Energy chart")+
+    geom_bar(mapping = aes(x = Energy.Chart))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+  ggplot(data = clean_historia)+
+    xlab("Cantidad por Promociones")+
+    ggtitle("Promociones")+
+    geom_bar(mapping = aes(x = Promociones))+ theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+
+checkformin_precio <- clean_historia[clean_historia$Precio.Catalogo !=0,] 
+names(checkformin_precio)
+```
+```{r}
+qqnorm(checkformin_precio$Precio.Catalogo, main = "Precio catalogo", col = 2)
+```
+
+```{r}
+clean_historia[is.na(clean_historia$`Precio Vta s/iva`),] <- 0
+```
